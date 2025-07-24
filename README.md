@@ -143,19 +143,12 @@ To build and run the project, make sure you have the following files in your pro
 
 #### **With Dev-C++ IDE**
 
-1. **Create a new Console Application project** (C language).
+1. **Create a new Console Application project** (C language). 
+   - Go to `File -> New -> Project -> Console Application -> C Project ->  -> Name: student_manager.dev ` 
 2. **Add all source files to your project**:  
-   - Go to `Project → Add to Project...` and select both `main.c`, `student.c`, and `student.h`.
-3. **Place `students.txt` in the project directory** (add sample data if you wish).
+   - Go to `Project → Add to Project...` and select both `student.c`, and `student.h`. Copy code in your dowloaded `main.c` to the existed `main.c` in project
+3. **Place `students.txt` in the project directory** (add sample data if you wish). Make sure your data file is in the same folder with `student_manager.dev` file.
 4. **Build & Run the project** using `F9` (Build & Run).
-
-#### **With GCC (command line)**
-
-Open terminal in the project folder and run:
-```sh
-gcc main.c student.c -o student_manager
-./student_manager
-```
 
 ### 3. **Mock Data Example**
 You can create (or use) a sample `students.txt` file:
