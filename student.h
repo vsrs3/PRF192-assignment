@@ -1,24 +1,22 @@
-#ifndef STUDENT_H
+#ifndef STUDENT_H         
 #define STUDENT_H
 
-#define MAX_NAME_LEN 50
-#define MAX_STUDENTS 1000
+#define MAX_NAME_LEN 50     // Khai báo giá trị tối đa cho chiều dài tên (họ/tên) của sinh viên.
+#define MAX_STUDENTS 1000   // Khai báo số lượng sinh viên tối đa có thể quản lý.
 
 typedef struct {
-    int id;
-    char firstName[MAX_NAME_LEN];
-    char lastName[MAX_NAME_LEN];
-    float gpa;
-} Student;
+    int id;                 // Mã số sinh viên (duy nhất cho mỗi sinh viên).
+    char firstName[MAX_NAME_LEN]; // Tên sinh viên (ví dụ: "Nam").
+    char lastName[MAX_NAME_LEN];  // Họ sinh viên (ví dụ: "Nguyễn").
+    float gpa;              // Điểm trung bình tích lũy (GPA) của sinh viên.
+} Student;                  // Định nghĩa cấu trúc Student lưu thông tin một sinh viên.
 
-// Main operations
-void addStudent(const char *filename);
-void displayStudents(const char *filename);
-void searchStudentById(const char *filename, int id);
-void searchStudentByLastName(const char *filename, const char *lastName);
-void sortStudentsByLastName(const char *filename);
+void addStudent(const char *filename);              // Hàm thêm sinh viên mới và lưu vào file.
+void displayStudents(const char *filename);         // Hàm hiển thị danh sách sinh viên từ file.
+void searchStudentById(const char *filename, int id);           // Hàm tìm kiếm sinh viên theo mã số.
+void searchStudentByLastName(const char *filename, const char *lastName); // Hàm tìm kiếm sinh viên theo họ.
+void sortStudentsByLastName(const char *filename);  // Hàm sắp xếp danh sách sinh viên theo họ.
 
-// Extra string functions
-void trimAndValidateName(char *name, const char *fieldName);
+void trimAndValidateName(char *name, const char *fieldName); // Hàm chuẩn hóa và kiểm tra tên/họ.
 
-#endif
+#endif                    // Kết thúc khối kiểm tra định nghĩa.
