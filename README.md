@@ -123,30 +123,67 @@ ID    First Name    Last Name    GPA
 102   Alice         Smith        3.90
 ```
 
-## 🚀 Getting Started
+## 🏁 Getting Started
 
-### Prerequisites
-- C compiler (GCC recommended)
-- Text editor or IDE
+### 1. **Project Structure**
 
-### Compilation
-```bash
-gcc -o student_management main.c
+To build and run the project, make sure you have the following files in your project directory:
+
 ```
-
-### Execution
-```bash
-./student_management
-```
-
-## 📁 File Structure
-```
-project/
+/PRF192-assignment
 │
-├── main.c              # Main program file
-├── students.txt        # Data storage file (created automatically)
-└── README.md          # This file
+├── main.c          # Contains the main function and menu logic
+├── student.c       # Implements all student management functions
+├── student.h       # Defines Student struct and function prototypes
+├── students.txt    # Text file to store student records (auto-created if missing)
+└── README.md       # Documentation
 ```
+
+### 2. **Building and Running (Dev-C++ or GCC)**
+
+#### **With Dev-C++ IDE**
+
+1. **Create a new Console Application project** (C language).
+2. **Add all source files to your project**:  
+   - Go to `Project → Add to Project...` and select both `main.c`, `student.c`, and `student.h`.
+3. **Place `students.txt` in the project directory** (add sample data if you wish).
+4. **Build & Run the project** using `F9` (Build & Run).
+
+#### **With GCC (command line)**
+
+Open terminal in the project folder and run:
+```sh
+gcc main.c student.c -o student_manager
+./student_manager
+```
+
+### 3. **Mock Data Example**
+You can create (or use) a sample `students.txt` file:
+```csv
+101,John,Doe,3.75
+102,Anna,Smith,3.90
+103,Peter,Johnson,2.85
+104,Linda,Brown,3.65
+```
+The program will update and append new students to this file without erasing existing records.
+
+## 🗂️ File Structure
+
+- **main.c**  
+  Contains the entry point (`main()`) and menu system.
+
+- **student.h**  
+  Declares the `Student` struct and all function prototypes for managing students.
+
+- **student.c**  
+  Implements all logic for adding, searching (by ID/last name), displaying, sorting students, and file handling.
+
+- **students.txt**  
+  Stores student records in CSV format:  
+  ```
+  ID,FirstName,LastName,GPA
+  ```
+  The file is read and updated automatically by the program.
 
 ## 🔧 Implementation Notes
 
