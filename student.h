@@ -18,4 +18,7 @@ void searchStudentById(const char *filename, int id);
 void searchStudentByLastName(const char *filename, const char *lastName);
 void sortStudentsByLastName(const char *filename);
 
+// Extra string functions
+void trimAndValidateName(char *name, const char *fieldName);
+
 #endif

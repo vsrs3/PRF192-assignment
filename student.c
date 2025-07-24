@@ -9,6 +9,36 @@ int loadStudents(const char *filename, Student students[], int *count);
 int saveStudents(const char *filename, Student students[], int count);
 void toLowerStr(char *str);
 
+void trimAndValidateName(char *name, const char *fieldName) {
+    int start = 0;
+    while (isspace((unsigned char)name[start])) start++;
+
+    int end = strlen(name) - 1;
+    while (end >= start && isspace((unsigned char)name[end])) end--;
+    
+    char cleaned[MAX_NAME_LEN];
+    int idx = 0, prevSpace = 0;
+    for (int i = start; i <= end && idx < MAX_NAME_LEN - 1; i++) {
+        char c = name[i];
+        if (isspace((unsigned char)c)) {
+            if (!prevSpace && idx > 0) {
+                cleaned[idx++] = ' ';
+                prevSpace = 1;
+            }
+        } else {
+            if (!(isalpha(c) || c == '\'')) {
+                printf("%s must contain only letters, spaces, or single quotes ('). Please re-enter.\n", fieldName);
+                name[0] = '\0';
+                return;
+            }
+            cleaned[idx++] = c;
+            prevSpace = 0;
+        }
+    }
+    cleaned[idx] = '\0';
+    strcpy(name, cleaned);
+}
+
 void addStudent(const char *filename) {
     Student students[MAX_STUDENTS];
     int count = 0;
@@ -32,16 +62,34 @@ void addStudent(const char *filename) {
         }
     }
 
-    printf("Enter first name: ");
-    fgets(s.firstName, MAX_NAME_LEN, stdin);
-    s.firstName[strcspn(s.firstName, "\n")] = '\0';
+    // First Name
+    do {
+        printf("Enter first name: ");
+        fgets(s.firstName, MAX_NAME_LEN, stdin);
+        s.firstName[strcspn(s.firstName, "\n")] = '\0';
+        trimAndValidateName(s.firstName, "First Name");
+    } while (strlen(s.firstName) == 0);
 
-    printf("Enter last name: ");
-    fgets(s.lastName, MAX_NAME_LEN, stdin);
-    s.lastName[strcspn(s.lastName, "\n")] = '\0';
+    // Last Name
+    do {
+        printf("Enter last name: ");
+        fgets(s.lastName, MAX_NAME_LEN, stdin);
+        s.lastName[strcspn(s.lastName, "\n")] = '\0';
+        trimAndValidateName(s.lastName, "Last Name");
+    } while (strlen(s.lastName) == 0);
 
-    printf("Enter GPA: ");
-    scanf("%f", &s.gpa);
+    // GPA
+    do {
+        printf("Enter GPA (0-10): ");
+        if (scanf("%f", &s.gpa) != 1) {
+            printf("Invalid input! GPA must be a number between 0 and 10.\n");
+            while(getchar()!='\n');
+            s.gpa = -1;
+            continue;
+        }
+        if (s.gpa < 0 || s.gpa > 10)
+            printf("GPA must be between 0 and 10. Please re-enter.\n");
+    } while (s.gpa < 0 || s.gpa > 10);
 
     students[count++] = s;
 
