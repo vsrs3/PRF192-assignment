@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include "student.h"
-
 // Helper functions
 int loadStudents(const char *filename, Student students[], int *count);
 int saveStudents(const char *filename, Student students[], int count);
@@ -108,7 +108,7 @@ void displayStudents(const char *filename) {
         return;
     }
     printf("Student List:\n");
-    printf("ID\tLast Name\t\tFirst Name\t\tGPA\n");
+    printf("%-5s %-15s %-15s %-5s\n", "ID", "Last Name", "First Name", "GPA");
     printf("-------------------------------------------------------------\n");
     for (int i = 0; i < count; i++) {
         printf("%d\t%-15s%-15s%.2f\n", students[i].id, students[i].lastName, students[i].firstName, students[i].gpa);
@@ -154,7 +154,7 @@ void searchStudentByLastName(const char *filename, const char *lastName) {
         if (strcmp(temp, query) == 0) {
             if (!found) {
                 printf("Search results:\n");
-                printf("ID\tLast Name\t\tFirst Name\t\tGPA\n");
+                printf("%-5s %-15s %-15s %-5s\n", "ID", "Last Name", "First Name", "GPA");
                 printf("-------------------------------------------------------------\n");
             }
             printf("%d\t%-15s%-15s%.2f\n", students[i].id, students[i].lastName, students[i].firstName, students[i].gpa);
