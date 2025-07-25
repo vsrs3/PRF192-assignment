@@ -17,6 +17,4 @@ void searchStudentById(const char *filename, int id);           // Hàm tìm ki�
 void searchStudentByLastName(const char *filename, const char *lastName); // Hàm tìm kiếm sinh viên theo họ.
 void sortStudentsByLastName(const char *filename);  // Hàm sắp xếp danh sách sinh viên theo họ.
 
-void trimAndValidateName(char *name, const char *fieldName); // Hàm chuẩn hóa và kiểm tra tên/họ.
-
-#endif                    // Kết thúc khối kiểm tra định nghĩa.
+#endif                   	// Kết thúc khối kiểm tra định nghĩa.

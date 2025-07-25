@@ -1,7 +1,7 @@
-#include <stdio.h>         // Thư viện nhập/xuất chuẩn.
-#include <stdlib.h>        // Thư viện cấp phát bộ nhớ, chuyển đổi kiểu dữ liệu.
-#include <string.h>        // Thư viện xử lý chuỗi.
-#include "student.h"       // Bao gồm các định nghĩa và hàm quản lý sinh viên.
+#include <stdio.h>         
+#include <stdlib.h>        
+#include <string.h>        
+#include "student.h"       
 
 #define FILENAME "students.txt" // Định nghĩa tên file chứa dữ liệu sinh viên.
 
