@@ -5,107 +5,71 @@
 #include <limits.h>       
 #include "student.h"      // Bao gồm file header định nghĩa cấu trúc và hàm.
 
-//Các hàm không có body này gọi là khai báo hàm để đảm bảo thứ tự biên dịch nhé
+/*******************************************************
+ *           		NHÓM KHAI BÁO HÀM                  *
+ *******************************************************/
 int loadStudents(const char *filename, Student students[], int *count);
-
 int saveStudents(const char *filename, Student students[], int count);
-
 void toLowerStr(char *str);
-
-void trimAndValidateName(char *name, const char *fieldName);
-
 int isValidPositiveInt(const char *str);
+void trimAndValidateName(char *name, const char *fieldName);
+void capitalizeWords(char *str);
+
+int inputStudentId(Student students[], int count);
+void inputStudentName(char *name, const char *fieldName);
+float inputStudentGpa();
+
+void addStudent(const char *filename);
+void displayStudents(const char *filename);
+void searchStudentById(const char *filename, int id);
+void searchStudentByLastName(const char *filename, const char *lastName);
+void sortStudentsByLastName(const char *filename);
+
+/**************************************************************
+ *            												  *
+ *  	NHÓM HÀM CHÍNH XỬ LÝ CHỨC NĂNG QUẢN LÝ SINH VIÊN      *
+ *           												  *
+ **************************************************************/
 
 /*
  * Hàm addStudent:
- * Thêm một sinh viên mới vào file.
- * - Đọc danh sách hiện có từ file.
- * - Kiểm tra trùng mã số sinh viên.
- * - Nhập tên, họ, GPA và kiểm tra hợp lệ.
- * - Lưu sinh viên mới vào mảng, ghi lại toàn bộ ra file.
+ * Thêm một sinh viên mới vào file danh sách sinh viên.
+ * Đọc danh sách sinh viên hiện có từ file.
+ * Kiểm tra danh sách đã đầy chưa.
+ * Nhập và kiểm tra hợp lệ mã số sinh viên, họ, tên, GPA.
+ * Thêm sinh viên vào mảng.
+ * Ghi lại toàn bộ danh sách ra file.
  */
 void addStudent(const char *filename) {
-    Student students[MAX_STUDENTS]; // Mảng lưu danh sách sinh viên.
-    int count = 0; // Biến lưu số lượng sinh viên hiện tại.
-    loadStudents(filename, students, &count); // Đọc danh sách sinh viên hiện có từ file.
+    Student students[MAX_STUDENTS]; // Mảng lưu danh sách sinh viên
+    int count = 0; // Số lượng sinh viên hiện có
+    loadStudents(filename, students, &count); // Đọc dữ liệu từ file
 
-    if (count >= MAX_STUDENTS) { // Kiểm tra số lượng sinh viên vượt quá giới hạn chưa.
+    // Kiểm tra số lượng sinh viên đã đầy chưa
+    if (count >= MAX_STUDENTS) {
         printf("Student list is full!\n");
         return;
     }
 
-    Student s; // Khai báo biến lưu thông tin sinh viên cần thêm.
+    Student s; // Biến lưu thông tin sinh viên mới
 
-	char buf[100]; // Khai báo mảng ký tự để lưu chuỗi nhập ID
-	int valid = 0; // Biến cờ để xác định khi nào nhập ID hợp lệ
-	do {
-	    // In thông báo yêu cầu người dùng nhập mã số sinh viên là số nguyên dương
-	    printf("Enter student ID (positive integer): ");
-	    // Đọc một dòng ký tự từ bàn phím vào biến buf
-	    if (!fgets(buf, sizeof(buf), stdin)) {
-	        // Nếu không đọc được dữ liệu đầu vào thì thông báo lỗi
-	        printf("Input error!\n");
-	        continue; // Quay lại đầu vòng lặp để nhập lại
-	    }
-	    // Xóa ký tự xuống dòng ở cuối chuỗi (nếu có)
-	    buf[strcspn(buf, "\n")] = '\0';
-	    // Kiểm tra chuỗi nhập vào có phải là số nguyên dương không
-	    if (!isValidPositiveInt(buf)) {
-	        // Nếu không hợp lệ thì thông báo lỗi và nhập lại
-	        printf("ID must be a positive integer and contain only digits!\n");
-	        continue; // Quay lại đầu vòng lặp để nhập lại
-	    }
-	    int enteredId = atoi(buf); // Chuyển chuỗi thành số nguyên để kiểm tra trùng
-	
-	    int duplicated = 0; // Biến cờ để kiểm tra ID có bị trùng không
-	    // Duyệt qua danh sách sinh viên hiện có để kiểm tra trùng lặp
-	    for (int i = 0; i < count; i++) {
-	        if (students[i].id == enteredId) {
-	            // Nếu ID đã tồn tại thì thông báo lỗi
-	            printf("ID already exists! Please enter another ID.\n");
-	            duplicated = 1; // Đánh dấu ID bị trùng
-	            break; // Thoát khỏi vòng lặp kiểm tra trùng
-	        }
-	    }
-	    if (duplicated) continue; // Nếu bị trùng thì quay lại đầu vòng lặp để nhập lại
-	
-	    s.id = enteredId; // Gán giá trị ID hợp lệ cho sinh viên mới
-	    valid = 1; // Đánh dấu đã nhập ID thành công
-	} while (!valid); // Lặp lại cho đến khi nhập được ID hợp lệ và không trùng
+    // Nhập và kiểm tra mã số sinh viên hợp lệ, không trùng
+    s.id = inputStudentId(students, count);
 
+    // Nhập và kiểm tra hợp lệ tên sinh viên
+    inputStudentName(s.firstName, "first name");
 
-    // Nhập tên, kiểm tra hợp lệ
-    do {
-        printf("Enter first name: ");
-        fgets(s.firstName, MAX_NAME_LEN, stdin); // Nhập tên sinh viên.
-        s.firstName[strcspn(s.firstName, "\n")] = '\0'; // Xóa ký tự xuống dòng.
-        trimAndValidateName(s.firstName, "First name"); // Chuẩn hóa, kiểm tra tên.
-    } while (strlen(s.firstName) == 0); // Lặp lại nếu tên không hợp lệ.
+    // Nhập và kiểm tra hợp lệ họ sinh viên
+    inputStudentName(s.lastName, "last name");
 
-    // Nhập họ, kiểm tra hợp lệ
-    do {
-        printf("Enter last name: ");
-        fgets(s.lastName, MAX_NAME_LEN, stdin); // Nhập họ sinh viên.
-        s.lastName[strcspn(s.lastName, "\n")] = '\0'; // Xóa ký tự xuống dòng.
-        trimAndValidateName(s.lastName, "Last name"); // Chuẩn hóa, kiểm tra họ.
-    } while (strlen(s.lastName) == 0); // Lặp lại nếu họ không hợp lệ.
+    // Nhập và kiểm tra hợp lệ GPA
+    s.gpa = inputStudentGpa();
 
-    // Nhập GPA, kiểm tra hợp lệ
-    do {
-        printf("Enter GPA (0-10): ");
-        if (scanf("%f", &s.gpa) != 1) { // Kiểm tra nhập GPA là số hay không.
-            printf("GPA must be a number between 0 and 10!\n");
-            while(getchar()!='\n'); // Xóa bộ đệm nhập.
-            s.gpa = -1;
-            continue;
-        }
-        if (s.gpa < 0 || s.gpa > 10) // Kiểm tra GPA nằm trong khoảng hợp lệ.
-            printf("GPA must be between 0 and 10. Please re-enter.\n");
-    } while (s.gpa < 0 || s.gpa > 10);
+    // Thêm sinh viên mới vào mảng
+    students[count++] = s;
 
-    students[count++] = s; // Thêm sinh viên mới vào mảng.
-
-    if (saveStudents(filename, students, count)) { // Ghi danh sách mới ra file.
+    // Ghi danh sách sinh viên mới ra file
+    if (saveStudents(filename, students, count)) {
         printf("Student added successfully.\n");
     } else {
         printf("Error writing to file!\n");
@@ -224,9 +188,108 @@ void sortStudentsByLastName(const char *filename) {
 }
 
 
-/**************************
- *   HELPER FUNCTION      *
- **************************/
+/**************************************************************
+ *    NHÓM HÀM HỖ TRỢ ĐẦU VÀO CHO addStudent (NHẬP/LÀM SẠCH) *
+ *  Bao gồm: inputStudentId, inputStudentName, inputStudentGpa*
+ **************************************************************/
+
+/*
+ * Hàm inputStudentId:
+ * Nhập mã số sinh viên từ bàn phím, kiểm tra xem có phải số nguyên dương không,
+ * đồng thời kiểm tra mã số này đã tồn tại trong danh sách sinh viên chưa.
+ * Nếu hợp lệ và chưa trùng, trả về ID vừa nhập.
+ */
+int inputStudentId(Student students[], int count) {
+    char buf[100]; // Mảng ký tự để lưu chuỗi nhập vào
+    int valid = 0, enteredId;
+    do {
+        // Yêu cầu người dùng nhập mã số sinh viên là số nguyên dương
+        printf("Enter student ID (positive integer): ");
+        if (!fgets(buf, sizeof(buf), stdin)) {
+            // Nếu đọc lỗi thì thông báo và nhập lại
+            printf("Input error!\n");
+            continue;
+        }
+        // Loại bỏ ký tự xuống dòng nếu có
+        buf[strcspn(buf, "\n")] = '\0';
+        // Kiểm tra chuỗi nhập vào có phải số nguyên dương không
+        if (!isValidPositiveInt(buf)) {
+            printf("ID must be a positive integer and contain only digits!\n");
+            continue;
+        }
+        enteredId = atoi(buf); // Chuyển chuỗi thành số nguyên
+        int duplicated = 0;
+        // Kiểm tra mã số vừa nhập có bị trùng không
+        for (int i = 0; i < count; i++) {
+            if (students[i].id == enteredId) {
+                printf("ID already exists! Please enter another ID.\n");
+                duplicated = 1;
+                break;
+            }
+        }
+        if (duplicated) continue; // Nếu bị trùng thì nhập lại
+        valid = 1; // Đánh dấu nhập thành công
+    } while (!valid); // Lặp đến khi nhập đúng và không trùng
+    return enteredId; // Trả về ID hợp lệ
+}
+
+/*
+ * Hàm inputStudentName:
+ * Nhập họ hoặc tên sinh viên, sau đó chuẩn hóa và kiểm tra hợp lệ.
+ * Nếu không hợp lệ thì yêu cầu nhập lại.
+ * Sau khi hợp lệ, tự động viết hoa chữ cái đầu mỗi từ.
+ */
+void inputStudentName(char *name, const char *fieldName) {
+    do {
+        // In thông báo nhập họ hoặc tên
+        printf("Enter %s: ", fieldName);
+        // Đọc chuỗi nhập vào từ bàn phím
+        fgets(name, MAX_NAME_LEN, stdin);
+        // Loại bỏ ký tự xuống dòng nếu có
+        name[strcspn(name, "\n")] = '\0';
+        // Chuẩn hóa và kiểm tra hợp lệ tên/họ
+        trimAndValidateName(name, fieldName);
+        // Nếu hợp lệ thì viết hoa chữ cái đầu mỗi từ
+        if (strlen(name) > 0) {
+            capitalizeWords(name);
+        }
+    } while (strlen(name) == 0); // Lặp đến khi nhập hợp lệ
+}
+
+/*
+ * Hàm inputStudentGpa:
+ * Nhập điểm GPA, kiểm tra hợp lệ (là số, nằm trong khoảng 0-10).
+ * Nếu không hợp lệ thì yêu cầu nhập lại.
+ * Trả về GPA hợp lệ.
+ */
+float inputStudentGpa() {
+    float gpa = -1;
+    do {
+        // Thông báo nhập GPA
+        printf("Enter GPA (0-10): ");
+        // Kiểm tra nhập có đúng kiểu số không
+        if (scanf("%f", &gpa) != 1) {
+            printf("GPA must be a number between 0 and 10!\n");
+            // Xóa bộ đệm nhập nếu nhập sai
+            while(getchar()!='\n');
+            gpa = -1;
+            continue;
+        }
+        // Kiểm tra GPA có nằm trong khoảng hợp lệ không
+        if (gpa < 0 || gpa > 10)
+            printf("GPA must be between 0 and 10. Please re-enter.\n");
+    } while (gpa < 0 || gpa > 10); // Lặp đến khi nhập hợp lệ
+    // Xóa bộ đệm nhập để chuẩn bị cho lần nhập tiếp theo
+    while(getchar()!='\n');
+    return gpa; // Trả về GPA hợp lệ
+}
+
+
+/********************************************************************
+ *        															*
+ *   NHÓM HÀM HỖ TRỢ XỬ LÝ CHUNG/ĐỊNH DẠNG CHUỖI VÀ FILE DỮ LIỆU    *
+ *																	*		
+ ********************************************************************/
 
 /* 
  * Hàm loadStudents:
@@ -236,19 +299,20 @@ void sortStudentsByLastName(const char *filename) {
  * Biến count nhận về số lượng sinh viên đã đọc.
  */
 int loadStudents(const char *filename, Student students[], int *count) {
-    FILE *f = fopen(filename, "r");
-    if (!f) return 0;
-    *count = 0;
+    FILE *f = fopen(filename, "r"); // Mở file ở chế độ đọc ("r")
+    if (!f) return 0; // Nếu không mở được file (con trỏ NULL), trả về 0 (thất bại)
+    *count = 0; // Khởi tạo số lượng sinh viên đã đọc về 0
+    // Vòng lặp đọc từng dòng dữ liệu sinh viên từ file
     while (fscanf(f, "%d,%49[^,],%49[^,],%f\n",
-                  &students[*count].id,
-                  students[*count].firstName,
-                  students[*count].lastName,
-                  &students[*count].gpa) == 4) {
-        (*count)++;
-        if (*count >= MAX_STUDENTS) break;
+                  &students[*count].id,          
+                  students[*count].firstName,     
+                  students[*count].lastName,      
+                  &students[*count].gpa) == 4) {  // Đọc trường gpa (float), chỉ tiếp tục nếu đọc đủ 4 giá trị
+        (*count)++;                              // Tăng biến đếm số lượng sinh viên đã đọc
+        if (*count >= MAX_STUDENTS) break;       // Nếu đã đạt số sinh viên tối đa thì dừng lại
     }
-    fclose(f);
-    return 1;
+    fclose(f); // Đóng file lại để giải phóng tài nguyên
+    return 1;  // Trả về 1 (thành công)
 }
 
 /*
@@ -258,13 +322,15 @@ int loadStudents(const char *filename, Student students[], int *count) {
  * Ghi lần lượt từng sinh viên theo định dạng: id,firstName,lastName,gpa
  */
 int saveStudents(const char *filename, Student students[], int count) {
-    FILE *f = fopen(filename, "w");
-    if (!f) return 0;
-    for (int i = 0; i < count; i++) {
+    FILE *f = fopen(filename, "w"); // Mở file ở chế độ ghi ("w"), nếu không có file sẽ tạo mới
+    if (!f) return 0; // Nếu không mở được file (con trỏ NULL), trả về 0 (thất bại)
+    for (int i = 0; i < count; i++) { // Duyệt qua từng sinh viên trong mảng
+        // Ghi thông tin từng sinh viên ra file với định dạng: id,firstName,lastName,gpa
+        // Sử dụng %.2f để ghi gpa với 2 số lẻ thập phân
         fprintf(f, "%d,%s,%s,%.2f\n", students[i].id, students[i].firstName, students[i].lastName, students[i].gpa);
     }
-    fclose(f);
-    return 1;
+    fclose(f); // Đóng file lại để đảm bảo dữ liệu được ghi xong và giải phóng tài nguyên
+    return 1;  // Trả về 1 (thành công)
 }
 
 /*
@@ -338,4 +404,25 @@ int isValidPositiveInt(const char *str) {
     int val = atoi(str);
     // Kiểm tra số đó có lớn hơn 0 không (phải là số nguyên dương)
     return val > 0;
+}
+
+/*
+ * Hàm capitalizeWords:
+ * Viết hoa chữ cái đầu tiên của mỗi từ trong chuỗi (các từ cách nhau bởi khoảng trắng).
+ * Các ký tự còn lại của từ sẽ được chuyển thành chữ thường.
+ */
+void capitalizeWords(char *str) {
+    int inWord = 0;
+    for (int i = 0; str[i]; i++) {
+        if (!isspace((unsigned char)str[i])) {
+            if (!inWord) { // Nếu là ký tự đầu tiên của từ
+                str[i] = toupper((unsigned char)str[i]);
+                inWord = 1;
+            } else {
+                str[i] = tolower((unsigned char)str[i]);
+            }
+        } else {
+            inWord = 0; // Gặp khoảng trắng, chuẩn bị sang từ mới
+        }
+    }
 }
